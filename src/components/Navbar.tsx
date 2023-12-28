@@ -1,8 +1,20 @@
+"use client";
+
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "./ui/Button";
 import { ArrowRight } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import getSession from "@/actions/getSession";
 const Navbar = () => {
+  const session = useSession();
+
+  const handleSignOut = () => {
+    signOut({ 
+      callbackUrl: `${window.location.origin}/sign-in`,
+     });        
+  }
+
   return (
     <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
       <MaxWidthWrapper>
@@ -22,23 +34,28 @@ const Navbar = () => {
                 })}>
                 Pricing
               </Link>
-              <Link
-                href="/authentication"
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                  className: "",
-                })}>
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className={buttonVariants({
-                  size: "sm",
-                  className: "",
-                })}>
-                Get started <ArrowRight className="ml-1.5 h-5 w-5" />
-              </Link>
+              {session.data?.user ? (
+                <Link
+                  href="/sign-in"
+                  onClick={handleSignOut}
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "",
+                  })}>
+                  Sign out
+                </Link>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    className: "",
+                  })}>
+                  Sign in
+                </Link>
+              )}
             </>
           </div>
         </div>
