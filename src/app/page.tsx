@@ -50,6 +50,8 @@ export default function Home() {
             />
           </div>
 
+          {/* Value proposition section */}
+          {/* A value proposition is a promise of value to be delivered. It’s the primary reason a prospect should buy from you. It’s also the #1 thing that determines whether people will bother reading more about your product or hit the back button. */}
           <div>
             <div className="mx-auto max-w-6xl px-6 lg:px-8">
               <div className="mt-16 flow-root sm:mt-24">
@@ -96,8 +98,8 @@ export default function Home() {
               <span className="text-blue-600">Machine Learning</span>.
             </p>
             <p className="mt-4 text-xl font-semibold text-gray-700">
-              Start interacting with your documents today! It has never been this
-              easy.
+              Start interacting with your documents today! It has never been
+              this easy.
             </p>
           </div>
         </div>
