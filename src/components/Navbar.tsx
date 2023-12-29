@@ -10,10 +10,10 @@ const Navbar = () => {
   const session = useSession();
 
   const handleSignOut = () => {
-    signOut({ 
-      callbackUrl: `${window.location.origin}/sign-in`,
-     });        
-  }
+    signOut({
+      callbackUrl: `${window.location.origin}/sign-in?variant=register`,
+    });
+  };
 
   return (
     <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
@@ -35,26 +35,34 @@ const Navbar = () => {
                 Pricing
               </Link>
               {session.data?.user ? (
-                <Link
-                  href="/sign-in"
+                <Button
                   onClick={handleSignOut}
                   className={buttonVariants({
-                    variant: "ghost",
                     size: "sm",
                     className: "",
                   })}>
                   Sign out
-                </Link>
+                </Button>
               ) : (
-                <Link
-                  href="/sign-in"
-                  className={buttonVariants({
-                    variant: "ghost",
-                    size: "sm",
-                    className: "",
-                  })}>
-                  Sign in
-                </Link>
+                <>
+                  <Link
+                    href="/sign-in"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                      className: "",
+                    })}>
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/sign-in?variant=register"
+                    className={buttonVariants({
+                      size: "sm",
+                      className: "",
+                    })}>
+                    Get started <ArrowRight className="inline-block w-4 h-4" />
+                  </Link>
+                </>
               )}
             </>
           </div>

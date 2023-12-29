@@ -13,7 +13,7 @@ import { BsGithub, BsGoogle, BsFacebook } from "react-icons/bs";
 import axios from "axios";
 // import toast from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Input from "@/components/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/hooks/use-toast";
@@ -29,11 +29,17 @@ interface AuthFormProps {
 const AuthForm = ({ setSelectedVariant }: AuthFormProps) => {
   const session = useSession(); // useSession is a hook from the next-auth library that returns the session object. The session object contains the user's session data (e.g. name, email, etc.). If the user is not logged in, it returns null.
   const router = useRouter();
-  const [variant, setVariant] = useState<Variant>("LOGIN");
+  const searchParams = useSearchParams();
+  const variantFromUrl = searchParams.get("variant")?.toUpperCase() 
+  const [variant, setVariant] = useState<Variant>(
+    variantFromUrl && variantFromUrl === "REGISTER"
+      ? "REGISTER"
+      : "LOGIN"
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
 
-  useEffect(() => { 
+  useEffect(() => {
     // useEffect is a hook that runs a function after the component is rendered. In this case, it runs the function when the session changes. This is useful when you want to do something when the session changes (e.g. show a toast message when the user logs in).
     if (session?.status === "authenticated") {
       router.push("/");
