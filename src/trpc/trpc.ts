@@ -20,15 +20,7 @@ const isAuth = middleware(async (options) => { // options is a TRPCRequest
         throw new TRPCError({
             code: 'UNAUTHORIZED',
             message: 'Not authenticated'
-        });
-// redirect to login page
-//         return options.next({
-//             redirect: {
-//                 destination: '/login',
-//                 permanent: false,
-//             }
-//         });
-        
+        });        
     }
 
     // if valid session, continue to next middleware or procedure 
