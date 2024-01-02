@@ -11,44 +11,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
+model User {
   // Some fields have been set to optional because social media logins are enabled and they don't have all the fields that are required for a normal login.
   // id        String    @id @default(cuid())
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId // What this does is that it tells Prisma to use the _id field in MongoDB as the id field in Prisma. This is necessary because MongoDB uses _id as the default primary key field name. If you don't do this, Prisma will create a new id field in MongoDB and use that as the primary key instead.
-  name      String?
-  email     String?    @unique
-  emailVerified DateTime? 
-  image     String?
-  projectName String? @default("DocAI")
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId // What this does is that it tells Prisma to use the _id field in MongoDB as the id field in Prisma. This is necessary because MongoDB uses _id as the default primary key field name. If you don't do this, Prisma will create a new id field in MongoDB and use that as the primary key instead.
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  role           String?   @default("ROLE_USER")
+  projectName    String?   @default("DocAI")
   hashedPassword String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-// This conversation relationship is a one-to-many relationship. It tells Prisma that a user can have many conversations. The fields: [conversationIds] tells Prisma that the conversationIds field in the user model is related to the id field in the conversation model. The references: [id] tells Prisma that the id field in the conversation model is related to the conversationIds field in the user model. This is necessary because Prisma needs to know how to relate the two models.
-  conversationIds String[] @db.ObjectId // This is an array of conversation ids. This is necessary because MongoDB doesn't support many-to-many relationships. So we have to store the ids of the conversations that a user is a part of in an array in the user model.
+  File File[]
 
-// This message relationship is a one-to-many relationship. It tells Prisma that a user can have many messages. The fields: [messageIds] tells Prisma that the messageIds field in the user model is related to the id field in the message model. The references: [id] tells Prisma that the id field in the message model is related to the messageIds field in the user model. This is necessary because Prisma needs to know how to relate the two models.
-  seenMessageIds String[] @db.ObjectId // This is an array of message ids. This is necessary because MongoDB doesn't support many-to-many relationships. So we have to store the ids of the messages that a user has seen in an array in the user model.
+  // stripeCustomerId String? @unique @map(name: "stripe_customer_id")
+  // stripeSubscriptionId String? @unique @map(name: "stripe_subscription_id")
+  // stripePriceId String? @unique @map(name: "stripe_price_id") // This is the id of the price that the user is subscribed to. For example, if the user is subscribed to the $10/month plan, then this field will be set to the id of the $10/month price.
+  // stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end") // This is the date that the user's subscription will end. For example, if the user is subscribed to the $10/month plan and they subscribed on January 1st, then this field will be set to February 1st.
 
   accounts Account[]
 }
 
-model Account{
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId // What this does is that it tells Prisma to use the _id field in MongoDB as the id field in Prisma. This is necessary because MongoDB uses _id as the default primary key field name. If you don't do this, Prisma will create a new id field in MongoDB and use that as the primary key instead.
-  userId    String   @db.ObjectId
-  type      String
-  projectName String? @default("DocAI")
-  provider  String // This is the name of the provider. For example, Google, Facebook, etc.
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId // What this does is that it tells Prisma to use the _id field in MongoDB as the id field in Prisma. This is necessary because MongoDB uses _id as the default primary key field name. If you don't do this, Prisma will create a new id field in MongoDB and use that as the primary key instead.
+  userId            String  @db.ObjectId
+  type              String
+  projectName       String? @default("DocAI")
+  provider          String // This is the name of the provider. For example, Google, Facebook, etc.
   providerAccountId String // This is the id that the provider gives to the user. For example, Google gives a user a Google id. Facebook gives a user a Facebook id. This is necessary because we need to know which user is logged in.
-  refresh_token String? @db.String 
-  access_token String? @db.String
-  expires_at Int?
-  token_type String?
-  scope String?
-  id_token String? @db.String
-  session_state String?
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade) // What this does is it maps the User model to the userId field in the Account model. This is necessary because Prisma needs to know how to relate the two models and then it references the id field in the User model. The onDelete: Cascade tells Prisma that if a user is deleted, then all of the accounts that are related to that user should also be deleted.
 
   @@unique([provider, providerAccountId]) // This tells Prisma that the combination of the provider and providerAccountId fields should be unique. This is necessary because a user can't have two accounts with the same provider and providerAccountId.
- }
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  COMPLETE
+  ERROR
+}
+
+model File {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId // What this does is that it tells Prisma to use the _id field in MongoDB as the id field in Prisma. This is necessary because MongoDB uses _id as the default primary key field name. If you don't do this, Prisma will create a new id field in MongoDB and use that as the primary key instead.
+  name         String
+  uploadStatus UploadStatus @default(PENDING)
+  url          String
+  key          String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+}
