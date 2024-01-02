@@ -5,10 +5,9 @@ import Link from "next/link";
 import { Button, buttonVariants } from "./ui/Button";
 import { ArrowRight } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import getSession from "@/actions/getSession";
 const Navbar = () => {
   const session = useSession();
-
+  
   const handleSignOut = () => {
     signOut({
       callbackUrl: `${window.location.origin}/sign-in?variant=register`,

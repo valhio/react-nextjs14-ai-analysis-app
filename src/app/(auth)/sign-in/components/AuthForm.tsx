@@ -42,7 +42,7 @@ const AuthForm = ({ setSelectedVariant }: AuthFormProps) => {
   useEffect(() => {
     // useEffect is a hook that runs a function after the component is rendered. In this case, it runs the function when the session changes. This is useful when you want to do something when the session changes (e.g. show a toast message when the user logs in).
     if (session?.status === "authenticated") {
-      router.push("/");
+      router.push("/dashboard");
       toast({
         title: "Logged in successfully",
         description: "You are now logged in.",
@@ -91,11 +91,11 @@ const AuthForm = ({ setSelectedVariant }: AuthFormProps) => {
           if (response?.error)
             toast({
               title: "An error occurred. Please try again.",
-              description: response.error,
+              description: "If the problem persists, please contact support or try again later.",
               variant: "destructive",
             });
           if (response?.ok && !response?.error) {
-            router.push("/");
+            router.push("/dashboard");
             toast({
               title: "Logged in successfully",
               description: "You are now logged in.",

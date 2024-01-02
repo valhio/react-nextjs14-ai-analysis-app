@@ -68,13 +68,8 @@ export const authOptions: AuthOptions = {
     ],
     callbacks: {
         session({session, token}: {session: any, token: any}) {
-            session.accessToken = token.accessToken;
-            // session.user = {
-            //     id: token.user.id,
-            //     role: token.user.role,
-            //     name: token.user.name,
-            //     email: token.user.email,
-            // }
+            // session.accessToken = token.accessToken;
+            // session.user = {id: token.user.id, role: token.user.role, name: token.user.name, email: token.user.email,}
             session.user = token.user;
             return session;
         },
@@ -83,6 +78,7 @@ export const authOptions: AuthOptions = {
                 // token.accessToken = user.id;
                 // token.user = user;
                 token.user = {
+                    id: user.id,
                     role: user.role,
                     name: user.name,
                     email: user.email,
