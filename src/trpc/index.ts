@@ -10,9 +10,8 @@ export const appRouter = router({
                 userId
             }
         });
-    }
-    )
-
+    }),
+   
 })
 
 export type AppRouter = typeof appRouter;
