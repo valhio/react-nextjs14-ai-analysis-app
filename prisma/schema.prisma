@@ -19,16 +19,16 @@ model User{
   email     String?    @unique
   emailVerified DateTime? 
   image     String?
+  role      String? @default("ROLE_USER")
   projectName String? @default("DocAI")
   hashedPassword String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-// This conversation relationship is a one-to-many relationship. It tells Prisma that a user can have many conversations. The fields: [conversationIds] tells Prisma that the conversationIds field in the user model is related to the id field in the conversation model. The references: [id] tells Prisma that the id field in the conversation model is related to the conversationIds field in the user model. This is necessary because Prisma needs to know how to relate the two models.
-  conversationIds String[] @db.ObjectId // This is an array of conversation ids. This is necessary because MongoDB doesn't support many-to-many relationships. So we have to store the ids of the conversations that a user is a part of in an array in the user model.
-
-// This message relationship is a one-to-many relationship. It tells Prisma that a user can have many messages. The fields: [messageIds] tells Prisma that the messageIds field in the user model is related to the id field in the message model. The references: [id] tells Prisma that the id field in the message model is related to the messageIds field in the user model. This is necessary because Prisma needs to know how to relate the two models.
-  seenMessageIds String[] @db.ObjectId // This is an array of message ids. This is necessary because MongoDB doesn't support many-to-many relationships. So we have to store the ids of the messages that a user has seen in an array in the user model.
+  // stripeCustomerId String? @unique @map(name: "stripe_customer_id")
+  // stripeSubscriptionId String? @unique @map(name: "stripe_subscription_id")
+  // stripePriceId String? @unique @map(name: "stripe_price_id") // This is the id of the price that the user is subscribed to. For example, if the user is subscribed to the $10/month plan, then this field will be set to the id of the $10/month price.
+  // stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end") // This is the date that the user's subscription will end. For example, if the user is subscribed to the $10/month plan and they subscribed on January 1st, then this field will be set to February 1st.
 
   accounts Account[]
 }
