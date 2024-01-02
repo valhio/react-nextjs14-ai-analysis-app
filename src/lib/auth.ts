@@ -17,6 +17,15 @@ export const authOptions: AuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_ID as string,
             clientSecret: process.env.GOOGLE_SECRET as string,
+            // profile(profile) {
+            //     return {
+            //         id: profile.id as string,
+            //         name: profile.name as string,
+            //         email: profile.email as string,
+            //         image: profile.avatar_url as string,
+            //         role: "USER",
+            //     }
+            // }
         }),
         FacebookProvider({
             clientId: process.env.FACEBOOK_ID as string,
@@ -39,6 +48,9 @@ export const authOptions: AuthOptions = {
                     }
                 });
 
+                console.log("user: ", user);
+                
+
                 if (!user || !user?.hashedPassword) { // If the user doesn't exist or doesn't have a hashed password(they signed up with a social provider), throw an error
                     throw new Error("Incorrect email or password");
                 }
@@ -53,14 +65,42 @@ export const authOptions: AuthOptions = {
                 return user; // If the passwords match, return the user
             }
         })
-
     ],
-
+    callbacks: {
+        session({session, token}: {session: any, token: any}) {
+            session.accessToken = token.accessToken;
+            // session.user = {
+            //     id: token.user.id,
+            //     role: token.user.role,
+            //     name: token.user.name,
+            //     email: token.user.email,
+            // }
+            session.user = token.user;
+            return session;
+        },
+         jwt({token, user, account}: any) {
+            if (user) {
+                // token.accessToken = user.id;
+                // token.user = user;
+                token.user = {
+                    role: user.role,
+                    name: user.name,
+                    email: user.email,
+                    image: user.image,
+                }
+            }
+            return token;
+        },
+    },
     debug: process.env.NODE_ENV === "development", // If we're in development, show debug messages in the console and in the browser console. If we're in production, don't show debug messages
     session: {
         strategy: "jwt", // We're using JWTs for sessions
+        // maxAge: 60 * 60 * 24 * 60, // Sessions last 60 days
+        maxAge: 30 * 24 * 60 * 60, // Sessions last 30 days
+        // maxAge: 60 * 60, // Sessions last 1 hour
+        updateAge: 24 * 60 * 60, // Sessions updated every 24 hours
     },
-    secret: process.env.NEXTAUTH_SECRET as string , // This is the secret used to sign the JWTs
+    secret: process.env.NEXTAUTH_SECRET as string, // This is the secret used to sign the JWTs
 };
 
 export default authOptions;
