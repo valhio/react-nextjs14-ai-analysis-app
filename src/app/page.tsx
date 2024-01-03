@@ -15,7 +15,7 @@ export default function Home() {
         </div>
         <h1 className="max-w-4xl text-4xl leading-none font-bold md:text-5xl lg:text-6xl pointer-events-none">
           Extract insights from your
-          <span className="text-blue-500"> documents </span>
+          <span className="bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent"> documents </span>
           with ease.
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg">
