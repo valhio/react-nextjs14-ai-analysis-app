@@ -48,7 +48,7 @@ const AuthForm = ({ setSelectedVariant }: AuthFormProps) => {
         description: "You are now logged in.",
       });
     }
-  }, [session?.status, router, toast]);
+  }, [session?.status, router, toast, callbackUrl]);
 
   const toggleVariant = useCallback(() => {
     // useCallback is a hook that returns a memoized callback. What this means is that the function will only be created once, and then it will be reused on subsequent renders. This is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary renders (e.g. shouldComponentUpdate).
