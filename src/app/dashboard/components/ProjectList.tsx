@@ -11,6 +11,7 @@ interface FileListProps{
     files: {
         id: string;
         name: string;
+        avatar: string | null;
         createdAt: string;
         updatedAt: string;
     }[];    

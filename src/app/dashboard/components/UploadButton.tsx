@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -17,11 +17,20 @@ import HoverCardElement from "./HoverCard";
 import Dropzone from "react-dropzone";
 import { Cloud, File, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/Progress";
+import { useSession } from "next-auth/react";
+import { uploadFileToS3 } from "@/utils/s3";
+import prisma from "@/lib/prismadb";
+import { trpc } from "@/app/_trpc/client";
+import { useRouter } from "next/navigation";
 
 const UploadDropzone = () => {
+  const router = useRouter();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
 
+  const session: any = useSession();
+
+  // Simulate a file upload progress
   const startSimulatedProgress = () => {
     setUploadProgress(0);
 
@@ -38,20 +47,49 @@ const UploadDropzone = () => {
     return interval;
   };
 
+  const { mutate: uploadFile } = trpc.uploadFile.useMutation({
+    onSuccess: (res) => {
+      router.push(`/dashboard/${res.id}`);
+    },
+  });
+
+  const handleUpload = async (file: any) => {
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    // const progressInterval = startSimulatedProgress();
+
+    const fileName = file.name;
+    const ownerId = session.data?.user?.id;
+
+    // Upload file to S3 with progress tracking, on success create a new file in the database
+    await uploadFileToS3(file, {
+      fileName,
+      ownerId,
+      onProgress: async (percentage) => {
+        setUploadProgress(percentage);
+      },
+      onSuccess: (res) => {
+        uploadFile({
+          key: ownerId + "/" + fileName,
+          name: fileName,
+          url: res.Location, // res.Location is the URL of the file on S3
+        });
+        return res;
+      },
+      onFail: (error) => {
+        console.error("Upload failed:", error);
+      },
+    });
+
+    // clearInterval(progressInterval);
+    setUploadProgress(100);
+  };
+
   return (
     <Dropzone
       multiple={false}
-      onDrop={async (acceptedFile) => {
-        setIsUploading(true)
-
-        const progressInterval = startSimulatedProgress()
-
-        await new Promise((resolve) => setTimeout(resolve, 2000))
-        // Handle file upload
-        
-        clearInterval(progressInterval)
-        setUploadProgress(100)
-      }}>
+      onDrop={async (acceptedFile) => handleUpload(acceptedFile[0])}>
       {({ getRootProps, getInputProps, acceptedFiles }) => (
         <div
           {...getRootProps()}
@@ -114,23 +152,6 @@ const UploadDropzone = () => {
         </div>
       )}
     </Dropzone>
-
-    // <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
-    //   {({ getRootProps, getInputProps, acceptedFiles }) => (
-    //       <div {...getRootProps()} className="border h-64 m-4 border-dashed border-gray-300 rounded-lg">
-    //         <input {...getInputProps()} />
-    //         <div className="flex flex-col items-center justify-center gap-2">
-    //           <span className="text-gray-700 text-sm">
-    //             Drag and drop your PDF file here
-    //           </span>
-    //           <span className="text-gray-700 text-sm">or</span>
-    //           <Button variant="default" className="w-32">
-    //             Browse
-    //           </Button>
-    //         </div>
-    //       </div>
-    //   )}
-    // </Dropzone>
   );
 };
 
