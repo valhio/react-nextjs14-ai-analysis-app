@@ -77,3 +77,18 @@ export const getFileUrlFromS3 = async (fileName: string, ownerId: string) => {
         throw error;
     }
 }
+
+export const deleteFileFromS3 = async (fileName: string, ownerId: string) => {
+    const params = {
+        Bucket: 'valhio-docai',
+        Key: `${ ownerId }/${ fileName }`,
+    };
+
+    try {
+        await s3.deleteObject(params).promise();
+        console.log('File deleted successfully');
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        throw error;
+    }
+};
