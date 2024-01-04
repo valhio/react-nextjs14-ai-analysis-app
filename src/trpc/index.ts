@@ -1,7 +1,9 @@
+import { getRandomGradient, getRandomGradientDirection } from '@/actions/getRandomAvatar';
 import { privateProcedure, publicProcedure, router } from './trpc';
 import prisma from '@/lib/prismadb';
 import { TRPCError } from '@trpc/server';
 import z from 'zod';
+import { File } from '@prisma/client';
 
 export const appRouter = router({
     getUserFiles: privateProcedure.query(async ({ ctx }) => {
@@ -41,7 +43,26 @@ export const appRouter = router({
         });
 
         return file;
-    })
+    }),
+
+    uploadFile: privateProcedure
+        .input(z.object({ key: z.string(), name: z.string(), url: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const { userId } = ctx;
+
+            const createdFile: File = await prisma.file.create({
+                data: {
+                    key: input.key,
+                    name: input.name,
+                    userId: userId,
+                    url: input.url,
+                    avatar: `${ getRandomGradient() + " " + getRandomGradientDirection() }`,
+                    uploadStatus: 'PROCESSING',
+                },
+            })
+
+            return createdFile;
+        }),
 
 })
 
