@@ -13,19 +13,7 @@ interface S3UploadOptions {
     onSuccess?: (response: AWS.S3.ManagedUpload.SendData) => void;
     onFail?: (error: Error) => void;
 }
-//
-// 
-// 
-// 
-// 
-// 
-// udate the file type to Blob
-// 
-// 
-// 
-// 
-// 
-// 
+
 export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
     const { ownerId, fileName, onProgress, onSuccess, onFail } = options;
     const params: AWS.S3.PutObjectRequest = {
