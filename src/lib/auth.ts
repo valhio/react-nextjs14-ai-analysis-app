@@ -46,10 +46,7 @@ export const authOptions: AuthOptions = {
                     where: {
                         email: credentials.email
                     }
-                });
-
-                console.log("user: ", user);
-                
+                });                
 
                 if (!user || !user?.hashedPassword) { // If the user doesn't exist or doesn't have a hashed password(they signed up with a social provider), throw an error
                     throw new Error("Incorrect email or password");
