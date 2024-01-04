@@ -34,13 +34,13 @@ export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
             })
             .promise();
 
-        if (onSuccess) {
-            onSuccess(response);
+        if (onSuccess) { // If success callback is provided, call it with the response
+            onSuccess(response); // Response contains the uploaded file url
         }
     } catch (error) {
-        console.error('Error uploading file to S3:', error);
-        if (onFail) {
-            onFail(error as Error);
+        console.log('Error uploading file to S3:', error);
+        if (onFail) { // If fail callback is provided, call it with the error
+            onFail(error as Error); // Error is of type AWS.AWSError
         }
         throw error;
     }
