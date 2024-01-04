@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
 
 const s3 = new AWS.S3({
     accessKeyId: "AKIAU2D25LSZ2DMCR3FD",
@@ -16,11 +17,18 @@ interface S3UploadOptions {
     onFail?: (error: Error) => void;
 }
 
+const generateUniqueKey = (ownerId: string, fileName: string) => {
+    const timestamp = new Date().toISOString().replace(/[-:]/g, '');
+    const uniqueId = uuidv4().replace(/-/g, '');
+    const uniqueKey = `${ownerId}/${uniqueId}-${fileName}`;
+    return uniqueKey;
+  };
+
 export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
     const { ownerId, fileName, fileType, fileSizeLimit, onProgress, onSuccess, onFail } = options;
     const params: AWS.S3.PutObjectRequest = {
         Bucket: 'valhio-docai',
-        Key: `${ ownerId }/${ fileName }`,
+        Key: generateUniqueKey(ownerId, fileName),
         Body: file,
         ACL: 'private',
     };
@@ -75,10 +83,10 @@ export const getFileFromS3 = async (fileName: string, ownerId: string) => {
     }
 };
 
-export const getFileUrlFromS3 = async (fileName: string, ownerId: string) => {
+export const getFileUrlFromS3 = async (fileKey: string, ownerId: string) => {
     const params = {
         Bucket: 'valhio-docai',
-        Key: `${ ownerId }/${ fileName }`,
+        Key: `${fileKey}`, // File key has the format: ownerId/uniqueId-fileName
     };
 
     try {

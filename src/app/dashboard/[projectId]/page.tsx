@@ -25,7 +25,7 @@ const Page = async ({ params }: PageProps) => {
   const fetchedFile = await getFileFromS3(file.name, user.id);
   if (!fetchedFile) notFound();
   
-  const fileUrl = await getFileUrlFromS3(file.name, user.id);
+  const fileUrl = await getFileUrlFromS3(file.key, user.id);
   if (!fileUrl) notFound();
 
   return (

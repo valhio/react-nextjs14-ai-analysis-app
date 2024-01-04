@@ -90,7 +90,7 @@ const UploadDropzone = () => {
       },
       onSuccess: (res) => {
         uploadFile({
-          key: ownerId + "/" + fileName,
+          key: res.Key,
           name: fileName,
           url: res.Location, // res.Location is the URL of the file on S3
         });
