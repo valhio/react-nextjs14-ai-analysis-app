@@ -1,9 +1,11 @@
 import getFileById from "@/actions/getFileById";
 import getSession from "@/actions/getSession";
-import { File } from "@prisma/client";
-import { notFound } from "next/navigation";
+import { File, User } from "@prisma/client";
+import { notFound, redirect } from "next/navigation";
 import PdfRenderer from "./components/PdfRenderer";
 import ChatWrapper from "./components/ChatWrapper";
+import { getFileFromS3, getFileUrlFromS3 } from "@/utils/s3";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 interface PageProps {
   params: {
@@ -14,9 +16,17 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
   const { projectId } = params;
 
-  const file = await getFileById(projectId);
+  const user = await getCurrentUser();
+  if (!user || !user.id || !user.email) redirect("/");
 
+  const file = await getFileById(projectId);
   if (!file) notFound();
+  
+  const fetchedFile = await getFileFromS3(file.name, user.id);
+  if (!fetchedFile) notFound();
+  
+  const fileUrl = await getFileUrlFromS3(file.name, user.id);
+  if (!fileUrl) notFound();
 
   return (
     <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)]">
@@ -24,7 +34,7 @@ const Page = async ({ params }: PageProps) => {
         {/* Left Side */}
         <div className="flex-1 xl:flex">
           <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-            <PdfRenderer />
+            <PdfRenderer url={fileUrl}/>
           </div>
         </div>
 
