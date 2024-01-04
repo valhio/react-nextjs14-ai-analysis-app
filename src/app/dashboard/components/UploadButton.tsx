@@ -83,6 +83,8 @@ const UploadDropzone = () => {
     await uploadFileToS3(file, {
       fileName,
       ownerId,
+      fileType: "application/pdf",
+      fileSizeLimit: 4000000, // 4.000.000 bytes = 4MB
       onProgress: async (percentage) => {
         setUploadProgress(percentage);
       },
@@ -98,7 +100,7 @@ const UploadDropzone = () => {
         toast({
           title: "File upload failed",
           description:
-            "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+            "Your file could not be uploaded. Reason: " + error.message,
           variant: "destructive",
         });
         setIsUploading(false);

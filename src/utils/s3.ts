@@ -9,20 +9,33 @@ const s3 = new AWS.S3({
 interface S3UploadOptions {
     ownerId: string;
     fileName: string;
+    fileType: string;
+    fileSizeLimit: number;
     onProgress?: (percentage: number) => void;
     onSuccess?: (response: AWS.S3.ManagedUpload.SendData) => void;
     onFail?: (error: Error) => void;
 }
 
 export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
-    const { ownerId, fileName, onProgress, onSuccess, onFail } = options;
+    const { ownerId, fileName, fileType, fileSizeLimit, onProgress, onSuccess, onFail } = options;
     const params: AWS.S3.PutObjectRequest = {
         Bucket: 'valhio-docai',
         Key: `${ ownerId }/${ fileName }`,
         Body: file,
         ACL: 'private',
-        // ContentType: 'application/pdf',
     };
+
+    if (!file) throw new Error('File is undefined');
+
+    if (!file.type || file.type !== fileType) {
+        if (onFail) onFail(new Error('File type is not supported')); // Pass error to the fail callback in the frontend component (currently UploadButton.tsx)
+        return; // Stop execution
+    }
+    
+    if (file.size > fileSizeLimit) {
+        if (onFail) onFail(new Error(`File size exceeds: ${ fileSizeLimit / 1000000 } MB`)); // Pass error to the fail callback in the frontend component (currently UploadButton.tsx)
+        return; // Stop execution
+    }
 
     try {
         const response = await s3.upload(params)
