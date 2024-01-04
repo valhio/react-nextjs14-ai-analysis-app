@@ -66,8 +66,9 @@ model File {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId // What this does is that it tells Prisma to use the _id field in MongoDB as the id field in Prisma. This is necessary because MongoDB uses _id as the default primary key field name. If you don't do this, Prisma will create a new id field in MongoDB and use that as the primary key instead.
   name         String
   uploadStatus UploadStatus @default(PENDING)
+  avatar       String?
   url          String
-  key          String
+  key          String // This is the key that is used to access the file in the S3 bucket.
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
