@@ -68,7 +68,7 @@ model File {
   uploadStatus UploadStatus @default(PENDING)
   avatar       String?
   url          String
-  key          String // This is the key that is used to access the file in the S3 bucket.
+  key          String // This is the key that is used to access the file in the S3 bucket. (the name of the file)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
