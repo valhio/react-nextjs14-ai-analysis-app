@@ -61,8 +61,8 @@ const UploadDropzone = () => {
     onError: (err, file) => {
       toast({
         title: "File upload failed",
-        description:
-          "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+        description: "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+        variant: "destructive",
       });
       setIsUploading(false);
       setUploadProgress(0);
@@ -99,6 +99,7 @@ const UploadDropzone = () => {
           title: "File upload failed",
           description:
             "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+          variant: "destructive",
         });
         setIsUploading(false);
         setUploadProgress(0);
