@@ -18,15 +18,18 @@ import Dropzone from "react-dropzone";
 import { Cloud, File, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/Progress";
 import { useSession } from "next-auth/react";
-import { uploadFileToS3 } from "@/utils/s3";
+import { deleteFileFromS3, uploadFileToS3 } from "@/utils/s3";
 import prisma from "@/lib/prismadb";
 import { trpc } from "@/app/_trpc/client";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const UploadDropzone = () => {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+  const { toast } = useToast();
 
   const session: any = useSession();
 
@@ -49,7 +52,21 @@ const UploadDropzone = () => {
 
   const { mutate: uploadFile } = trpc.uploadFile.useMutation({
     onSuccess: (res) => {
+      toast({
+        title: "File uploaded",
+        description: "Your file has been uploaded successfully",
+      });
       router.push(`/dashboard/${res.id}`);
+    },
+    onError: (err, file) => {
+      toast({
+        title: "File upload failed",
+        description:
+          "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+      });
+      setIsUploading(false);
+      setUploadProgress(0);
+      deleteFileFromS3(file.name, session.data?.user?.id); // Delete file from S3
     },
   });
 
@@ -78,7 +95,13 @@ const UploadDropzone = () => {
         return res;
       },
       onFail: (error) => {
-        console.error("Upload failed:", error);
+        toast({
+          title: "File upload failed",
+          description:
+            "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+        });
+        setIsUploading(false);
+        setUploadProgress(0);
       },
     });
 
