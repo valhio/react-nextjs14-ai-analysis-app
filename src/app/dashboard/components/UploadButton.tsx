@@ -10,16 +10,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import Link from "next/link";
 import { useState } from "react";
-import HoverTooltip from "./HoverCard";
 import HoverCardElement from "./HoverCard";
 import Dropzone from "react-dropzone";
-import { Cloud, File, Loader2 } from "lucide-react";
+import { Cloud, File, Loader2, Upload } from "lucide-react";
 import { Progress } from "@/components/ui/Progress";
 import { useSession } from "next-auth/react";
 import { deleteFileFromS3, uploadFileToS3 } from "@/utils/s3";
-import prisma from "@/lib/prismadb";
 import { trpc } from "@/app/_trpc/client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -191,7 +188,8 @@ const UploadButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">Upload PDF</Button>
+        <Button variant="default" className="w-full sm:w-auto"
+        >Upload PDF<Upload className="w-5 h-5 ml-1 text-white" /></Button>
       </DialogTrigger>
 
       <DialogContent className="">
