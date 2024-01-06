@@ -30,7 +30,7 @@ const Dashboard = () => {
   });
 
   return (
-    <main className="mx-auto max-w-7xl sm:p-3 md:p-10">
+    <main className="mx-auto max-w-7xl p-4 md:p-10">
       <div className="mt-8 flex flex-col items-center justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
         <h1 className="mb-3 font-bold text-3xl text-gray-900">My Projects</h1>
         <UploadButton />

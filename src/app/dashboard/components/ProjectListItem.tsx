@@ -41,7 +41,7 @@ const FileListItem: React.FC<FileListItemProps> = ({
               "h-14 w-14 flex items-center justify-center flex-shrink-0 rounded-full relative",
               file.avatar || "bg-gradient-to-r from-zinc-500 to-zinc-600"
             )}>
-            <FileIcon className="h-5 w-5 text-white" />
+            <FileIcon className="h-6 w-6 text-white" />
             {isFileNew && (
               <span
                 className={cn(

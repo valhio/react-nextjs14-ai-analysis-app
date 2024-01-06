@@ -1,10 +1,9 @@
 import getFileById from "@/actions/getFileById";
 import getSession from "@/actions/getSession";
-import { File, User } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import PdfRenderer from "./components/PdfRenderer";
 import ChatWrapper from "./components/ChatWrapper";
-import { getFileFromS3, getFileUrlFromS3 } from "@/utils/s3";
+import { getFileUrlFromS3 } from "@/utils/s3";
 import getCurrentUser from "@/actions/getCurrentUser";
 
 interface PageProps {
@@ -22,8 +21,9 @@ const Page = async ({ params }: PageProps) => {
   const file = await getFileById(projectId);
   if (!file) notFound();
     
+  // Can't use user.url because it will throw 403 unauthorized error. This getFileUrlFromS3 function sends a key to the s3 bucket that authorizes the user to access the file. The link that is returned is a temporary link that expires after 5 or 15 minutes(dont remember).
   const fileUrl = await getFileUrlFromS3(file.key, user.id);
-  if (!fileUrl) notFound();
+  if (!fileUrl) notFound();  
 
   return (
     <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)]">
