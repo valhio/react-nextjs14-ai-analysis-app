@@ -20,9 +20,9 @@ interface S3UploadOptions {
 const generateUniqueKey = (ownerId: string, fileName: string) => {
     const timestamp = new Date().toISOString().replace(/[-:]/g, '');
     const uniqueId = uuidv4().replace(/-/g, '');
-    const uniqueKey = `${ownerId}/${uniqueId}-${fileName}`;
+    const uniqueKey = `${ ownerId }/${ uniqueId }-${ fileName }`;
     return uniqueKey;
-  };
+};
 
 export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
     const { ownerId, fileName, fileType, fileSizeLimit, onProgress, onSuccess, onFail } = options;
@@ -39,7 +39,7 @@ export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
         if (onFail) onFail(new Error('File type is not supported')); // Pass error to the fail callback in the frontend component (currently UploadButton.tsx)
         return; // Stop execution
     }
-    
+
     if (file.size > fileSizeLimit) {
         if (onFail) onFail(new Error(`File size exceeds: ${ fileSizeLimit / 1000000 } MB`)); // Pass error to the fail callback in the frontend component (currently UploadButton.tsx)
         return; // Stop execution
@@ -86,11 +86,13 @@ export const getFileFromS3 = async (fileName: string, ownerId: string) => {
 export const getFileUrlFromS3 = async (fileKey: string, ownerId: string) => {
     const params = {
         Bucket: 'valhio-docai',
-        Key: `${fileKey}`, // File key has the format: ownerId/uniqueId-fileName
+        Key: `${ fileKey }`, // File key has the format: ownerId/uniqueId-fileName. It is used to authorize the current user to access the file.
     };
 
+    if (fileKey.split('/')[0] !== ownerId) throw new Error('User is not authorized to access this file');
+
     try {
-        const result = await s3.getSignedUrlPromise('getObject', params);
+        const result = await s3.getSignedUrlPromise('getObject', params); // Get a signed url that expires in 15 minutes.  A signed url is a temporary url that allows access to a private file. This url is used to fetch the file from the frontend. A signed url is required because the bucket is private.
         console.log('File fetched successfully');
         return result;
     } catch (error) {
@@ -99,10 +101,10 @@ export const getFileUrlFromS3 = async (fileKey: string, ownerId: string) => {
     }
 }
 
-export const deleteFileFromS3 = async (fileName: string, ownerId: string) => {
+export const deleteFileFromS3 = async (fileKey: string, ownerId: string) => {
     const params = {
         Bucket: 'valhio-docai',
-        Key: `${ ownerId }/${ fileName }`,
+        Key: `${ fileKey }`,
     };
 
     try {

@@ -66,7 +66,7 @@ const UploadDropzone = () => {
       });
       setIsUploading(false);
       setUploadProgress(0);
-      deleteFileFromS3(file.name, session.data?.user?.id); // Delete file from S3
+      deleteFileFromS3(file.key, session.data?.user?.id); // Delete file from S3
     },
   });
 
