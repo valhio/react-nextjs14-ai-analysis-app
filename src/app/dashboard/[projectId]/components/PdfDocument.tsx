@@ -14,9 +14,10 @@ interface PdfDocumentProps {
   zoom?: number;
   scale?: number;
   rotate?: number;
+  setNumPages: (numPages: number) => void;
 }
 
-const PdfDocument = ({ url, pageNumber }: PdfDocumentProps) => {
+const PdfDocument = ({ url, pageNumber, setNumPages }: PdfDocumentProps) => {
   const { toast } = useToast();
   const { width, ref } = useResizeDetector();
 
@@ -31,9 +32,13 @@ const PdfDocument = ({ url, pageNumber }: PdfDocumentProps) => {
         onLoadError={() => {
           toast({
             title: "Error loading PDF",
-            description: "Failed to load PDF document. Please try again, or contact support if the problem persists.",
+            description:
+              "Failed to load PDF document. Please try again, or contact support if the problem persists.",
             variant: "destructive",
           });
+        }}
+        onLoadSuccess={({ numPages }) => { // destructure numPages from the document
+          setNumPages(numPages);
         }}
         file={url}
         className={"max-h-full"}>
