@@ -30,25 +30,25 @@ const AuthForm = ({ setSelectedVariant }: AuthFormProps) => {
   const session = useSession(); // useSession is a hook from the next-auth library that returns the session object. The session object contains the user's session data (e.g. name, email, etc.). If the user is not logged in, it returns null.
   const router = useRouter();
   const searchParams = useSearchParams();
-  const variantFromUrl = searchParams.get("variant")?.toUpperCase() 
+  const variantFromUrl = searchParams.get("variant")?.toUpperCase();
   const [variant, setVariant] = useState<Variant>(
-    variantFromUrl && variantFromUrl === "REGISTER"
-      ? "REGISTER"
-      : "LOGIN"
+    variantFromUrl && variantFromUrl === "REGISTER" ? "REGISTER" : "LOGIN"
   );
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
     // useEffect is a hook that runs a function after the component is rendered. In this case, it runs the function when the session changes. This is useful when you want to do something when the session changes (e.g. show a toast message when the user logs in).
     if (session?.status === "authenticated") {
-      router.push("/dashboard");
+      router.push(callbackUrl);
       toast({
         title: "Logged in successfully",
         description: "You are now logged in.",
       });
     }
-  }, [session?.status, router, toast]);
+  }, [session?.status, router, toast, callbackUrl]);
 
   const toggleVariant = useCallback(() => {
     // useCallback is a hook that returns a memoized callback. What this means is that the function will only be created once, and then it will be reused on subsequent renders. This is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary renders (e.g. shouldComponentUpdate).
@@ -91,11 +91,12 @@ const AuthForm = ({ setSelectedVariant }: AuthFormProps) => {
           if (response?.error)
             toast({
               title: "An error occurred. Please try again.",
-              description: "If the problem persists, please contact support or try again later.",
+              description:
+                "If the problem persists, please contact support or try again later.",
               variant: "destructive",
             });
           if (response?.ok && !response?.error) {
-            router.push("/dashboard");
+            router.push(callbackUrl);
             toast({
               title: "Logged in successfully",
               description: "You are now logged in.",

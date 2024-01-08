@@ -14,21 +14,12 @@ const t = initTRPC.create();
 const middleware = t.middleware;
 const isAuth = middleware(async (options) => { // options is a TRPCRequest
     const session: any = await getSession(); // get session from database
-    console.log("session is : ", session);
     
     if (!session || !session.user || !session.user.email) { // if invalid session, throw error
         throw new TRPCError({
             code: 'UNAUTHORIZED',
             message: 'Not authenticated'
-        });
-// redirect to login page
-//         return options.next({
-//             redirect: {
-//                 destination: '/login',
-//                 permanent: false,
-//             }
-//         });
-        
+        });        
     }
 
     // if valid session, continue to next middleware or procedure 
