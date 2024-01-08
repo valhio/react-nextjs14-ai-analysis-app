@@ -8,6 +8,7 @@ const s3 = new AWS.S3({
 });
 
 interface S3UploadOptions {
+    file: Blob;
     ownerId: string;
     fileName: string;
     fileType: string;
@@ -24,8 +25,8 @@ const generateUniqueKey = (ownerId: string, fileName: string) => {
     return uniqueKey;
 };
 
-export const uploadFileToS3 = async (file: Blob, options: S3UploadOptions) => {
-    const { ownerId, fileName, fileType, fileSizeLimit, onProgress, onSuccess, onFail } = options;
+export const uploadFileToS3 = async (options: S3UploadOptions) => {
+    const { file, ownerId, fileName, fileType, fileSizeLimit, onProgress, onSuccess, onFail } = options;
     const params: AWS.S3.PutObjectRequest = {
         Bucket: 'valhio-docai',
         Key: generateUniqueKey(ownerId, fileName),
@@ -102,16 +103,14 @@ export const getFileUrlFromS3 = async (fileKey: string, ownerId: string,) => {
 }
 
 interface s3DeleteOptions {
+    fileKey: string;
+    ownerId: string;
     onSuccess?: () => void;
     onFail?: (error: Error) => void;
 }
 
-export const deleteFileFromS3 = async (
-    fileKey: string,
-    ownerId: string,
-    options?: s3DeleteOptions,
-) => {
-    const { onSuccess, onFail } = options || {};
+export const deleteFileFromS3 = async (options: s3DeleteOptions,) => {
+    const { fileKey, ownerId, onSuccess, onFail } = options || {};
     const params = {
         Bucket: 'valhio-docai',
         Key: `${ fileKey }`,

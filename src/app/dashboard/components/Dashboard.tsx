@@ -38,7 +38,9 @@ const Dashboard = () => {
     onMutate({ id }) {
       setCurrentlyDeletingFile(id);
       const file = files?.find((file) => file.id === id);
-      deleteFileFromS3(file?.key!, session?.data?.user?.id!, {
+      deleteFileFromS3({
+        fileKey: file?.key!,
+        ownerId: session?.data?.user?.id!,
         onFail: () => {
           // Tried everything to stop the mutation, when s3 delete fails, but nothing worked. So, I'm just going to let the mutation run and handle the S3 deletion later.
           // TODO: In the database, set a property on the file that indicates that the file should be deleted from S3. Then, create a cron job that runs every 5 minutes and deletes all files that have this property set to true.

@@ -58,12 +58,16 @@ const UploadDropzone = () => {
     onError: (err, file) => {
       toast({
         title: "File upload failed",
-        description: "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
+        description:
+          "Your file could not be uploaded. If this problem persists, please contact support or try again later.",
         variant: "destructive",
       });
       setIsUploading(false);
       setUploadProgress(0);
-      deleteFileFromS3(file.key, session.data?.user?.id); // Delete file from S3
+      deleteFileFromS3({
+        fileKey: file.key,
+        ownerId: session.data?.user?.id,
+      }); 
     },
   });
 
@@ -77,7 +81,8 @@ const UploadDropzone = () => {
     const ownerId = session.data?.user?.id;
 
     // Upload file to S3 with progress tracking, on success create a new file in the database
-    await uploadFileToS3(file, {
+    await uploadFileToS3({
+      file,
       fileName,
       ownerId,
       fileType: "application/pdf",
@@ -188,8 +193,10 @@ const UploadButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default" className="w-full sm:w-auto"
-        >Upload PDF<Upload className="w-5 h-5 ml-1 text-white" /></Button>
+        <Button variant="default" className="w-full sm:w-auto">
+          Upload PDF
+          <Upload className="w-5 h-5 ml-1 text-white" />
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="">
