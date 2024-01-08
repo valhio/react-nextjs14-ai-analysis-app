@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
+import PageControls from "./PageControls";
 
 interface PdfRendererProps {
   url: string;
@@ -50,58 +51,21 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
 
   return (
     <div className="w-full bg-white rounded-md shadow flex flex-col items-center">
+      {/* Toolbar for the PDF viewer. It contains buttons for zooming in and out, rotating the page, and showing the page controls. */}
       <div className="h-14 w-full border-b border-zinc-200 flex items-center justify-between px-4">
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="ghost"
-            aria-label="previous page"
-            className="p-2"
-            disabled={currentPage <= 1 || numPages === undefined}
-            onClick={() => {
-              setCurrentPage((prev) => (prev - 1 < 1 ? 1 : prev - 1));
-            }}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center gap-1.5">
-            <Input
-              {...register("page")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  // handleSubmit((data) => {
-                  //   setCurrentPage(Number(data.page));
-                  // })();
-                  handleSubmit(handlePageSubmit)();
-                }
-              }}
-              className={cn("w-12 h-8",errors.page && "focus-visible:ring-red-500")}
-            />
-            <p className="text-zinc-700 text-sm space-x-1">
-              <span>/</span>
-              <span>
-                {numPages ?? (
-                  <span className="animate-pulse text-zinc-700 text-xl ">
-                    ...
-                  </span>
-                )}
-              </span>
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            aria-label="next page"
-            className="p-2"
-            disabled={currentPage === numPages || !numPages}
-            onClick={() => {
-              setCurrentPage((prev) =>
-                prev + 1 > numPages! ? numPages! : prev + 1
-              );
-            }}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Page controls */}
+        <PageControls
+          currentPage={currentPage}
+          numPages={numPages}
+          setCurrentPage={setCurrentPage}
+          register={register}
+          handleSubmit={handleSubmit(handlePageSubmit)}
+          errors={errors}
+        />
       </div>
 
       <div className="flex-1 w-full max-h-screen">
+        {/* Document */}
         <PdfDocument
           url={url}
           pageNumber={currentPage}
