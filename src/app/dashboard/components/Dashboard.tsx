@@ -6,9 +6,17 @@ import { useState } from "react";
 import LoadingFiles from "./FileLoadingSkeleton";
 import EmptyState from "./EmptyState";
 import FileList from "./ProjectList";
+import { deleteFileFromS3 } from "@/utils/s3";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
-  const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<string | null>(null);
+  const session: any = useSession();
+  const { toast } = useToast();
+
+  const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
+    string | null
+  >(null);
 
   const utils = trpc.useUtils(); // The useUtils hook allows us to invalidate the query (getUserFiles) and refetch the data. We can use this hook to refetch the data after deleting a file.
 
@@ -19,14 +27,28 @@ const Dashboard = () => {
     onSuccess: () => {
       utils.getUserFiles.invalidate(); // Invalidate the getUserFiles query after deleting a file. This will cause the query to refetch the data from the server and update the UI.
     },
+    onError: (error) => {
+      toast({
+        title: "Error while deleting file",
+        // description: "Please try again later or contact support.",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
     onMutate({ id }) {
-      // onMutate is a function that is called before the mutation function is called (right when the button is clicked). We can use this function to update the UI before the mutation function is called.
       setCurrentlyDeletingFile(id);
+      const file = files?.find((file) => file.id === id);
+      deleteFileFromS3(file?.key!, session?.data?.user?.id!, {
+        onFail: () => {
+          // Tried everything to stop the mutation, when s3 delete fails, but nothing worked. So, I'm just going to let the mutation run and handle the S3 deletion later.
+          // TODO: In the database, set a property on the file that indicates that the file should be deleted from S3. Then, create a cron job that runs every 5 minutes and deletes all files that have this property set to true.
+        },
+      });
     },
     onSettled() {
       // onSettled is a function that is called after the mutation function is called (after the file is deleted). We can use this function to update the UI after the mutation function is called.
       setCurrentlyDeletingFile(null);
-    }, 
+    },
   });
 
   return (

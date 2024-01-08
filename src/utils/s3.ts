@@ -83,7 +83,7 @@ export const getFileFromS3 = async (fileName: string, ownerId: string) => {
     }
 };
 
-export const getFileUrlFromS3 = async (fileKey: string, ownerId: string) => {
+export const getFileUrlFromS3 = async (fileKey: string, ownerId: string,) => {
     const params = {
         Bucket: 'valhio-docai',
         Key: `${ fileKey }`, // File key has the format: ownerId/uniqueId-fileName. It is used to authorize the current user to access the file.
@@ -101,16 +101,33 @@ export const getFileUrlFromS3 = async (fileKey: string, ownerId: string) => {
     }
 }
 
-export const deleteFileFromS3 = async (fileKey: string, ownerId: string) => {
+interface s3DeleteOptions {
+    onSuccess?: () => void;
+    onFail?: (error: Error) => void;
+}
+
+export const deleteFileFromS3 = async (
+    fileKey: string,
+    ownerId: string,
+    options?: s3DeleteOptions,
+) => {
+    const { onSuccess, onFail } = options || {};
     const params = {
         Bucket: 'valhio-docai',
         Key: `${ fileKey }`,
     };
 
+    if (fileKey.split('/')[0] !== ownerId) {
+        if (onFail) onFail(new Error('User is not authorized to access this file'));
+        return;
+    }
+
     try {
         await s3.deleteObject(params).promise();
+        if (onSuccess) onSuccess();
         console.log('File deleted successfully');
     } catch (error) {
+        if (onFail) onFail(error as Error);
         console.error('Error deleting file:', error);
         throw error;
     }
