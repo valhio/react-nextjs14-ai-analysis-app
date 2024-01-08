@@ -10,6 +10,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import PageControls from "./PageControls";
+import ZoomControls from "./ZoomControls";
 
 interface PdfRendererProps {
   url: string;
@@ -18,7 +19,6 @@ interface PdfRendererProps {
 const PdfRenderer = ({ url }: PdfRendererProps) => {
   const [numPages, setNumPages] = useState<number>();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [zoom, setZoom] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
   const [rotate, setRotate] = useState<number>(0);
   const [showPageControls, setShowPageControls] = useState<boolean>(false);
@@ -62,6 +62,9 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
           handleSubmit={handleSubmit(handlePageSubmit)}
           errors={errors}
         />
+
+        {/* Zoom controls */}
+        <ZoomControls scale={scale} setScale={setScale}/>
       </div>
 
       <div className="flex-1 w-full max-h-screen">
@@ -70,6 +73,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
           url={url}
           pageNumber={currentPage}
           setNumPages={setNumPages}
+          scale={scale}
         />
       </div>
     </div>
