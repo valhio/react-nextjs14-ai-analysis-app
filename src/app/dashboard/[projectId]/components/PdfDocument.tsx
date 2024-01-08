@@ -11,20 +11,24 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 interface PdfDocumentProps {
   url: string;
-  pageNumber: number;
+  pageNumber?: number;
   zoom?: number;
   scale?: number;
   rotate?: number;
   rotation?: number;
-  setNumPages: (numPages: number) => void;
+  numPages?: number;
+  setNumPages?: (numPages: number) => void;
+  renderAllPages?: boolean;
 }
 
 const PdfDocument = ({
   url,
   pageNumber,
+  numPages,
   setNumPages,
   scale,
-  rotation
+  rotation,
+  renderAllPages,
 }: PdfDocumentProps) => {
   const { toast } = useToast();
   const { width, ref } = useResizeDetector();
@@ -49,16 +53,29 @@ const PdfDocument = ({
           }}
           onLoadSuccess={({ numPages }) => {
             // destructure numPages from the document
-            setNumPages(numPages);
+            if (setNumPages) setNumPages(numPages);
           }}
           file={url}
           className={"max-h-full"}>
-          <Page
-            width={width ? width : 1}
-            pageNumber={pageNumber}
-            scale={scale ? scale : 1}
-            rotate={rotation ? rotation : 0}
-          />
+          {renderAllPages && numPages ? (
+            new Array(numPages)
+              .fill(0)
+              .map((_, i) => (
+                <Page 
+                key={i} 
+                width={width ? width : 1} 
+                pageNumber={i + 1} 
+                rotate={rotation ? rotation : 0}
+                />
+              ))
+          ) : (
+            <Page
+              width={width ? width : 1}
+              pageNumber={pageNumber}
+              scale={scale ? scale : 1}
+              rotate={rotation ? rotation : 0}
+            />
+          )}
         </Document>
       </div>
     </SimpleBar>

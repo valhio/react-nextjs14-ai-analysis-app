@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import PageControls from "./PageControls";
 import ZoomControls from "./ZoomControls";
 import RotationControls from "./RotationControls";
+import PdfFullscreen from "./PdfFullscreen";
 
 interface PdfRendererProps {
   url: string;
@@ -68,6 +69,11 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
         <div className="space-x-2">
           <ZoomControls scale={scale} setScale={setScale} />
           <RotationControls setRotation={setRotation} />
+          <PdfFullscreen
+            url={url}
+            numPages={numPages ?? 0}
+            rotation={rotation}
+          />
         </div>
       </div>
 
