@@ -66,6 +66,11 @@ const PdfDocument = ({
                 width={width ? width : 1} 
                 pageNumber={i + 1} 
                 rotate={rotation ? rotation : 0}
+                loading={
+                  <div className="flex justify-center">
+                    <Loader2 className="my-24 w-8 h-8 animate-spin text-zinc-500" />
+                  </div>
+                }
                 />
               ))
           ) : (
@@ -74,6 +79,11 @@ const PdfDocument = ({
               pageNumber={pageNumber}
               scale={scale ? scale : 1}
               rotate={rotation ? rotation : 0}
+              loading={
+                <div className="flex justify-center">
+                  <Loader2 className="my-24 w-8 h-8 animate-spin text-zinc-500" />
+                </div>
+              }
             />
           )}
         </Document>
