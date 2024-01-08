@@ -3,11 +3,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
+import { UseFormSetValue } from 'react-hook-form';
 
 interface PageControlsProps {
   currentPage: number;
   numPages: number | undefined;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setValue: UseFormSetValue<{"page": string}>; 
   register: any; // Adjust the type based on your actual implementation
   handleSubmit: () => void;
   errors: any; // Adjust the type based on your actual implementation
@@ -17,6 +19,7 @@ const PageControls: React.FC<PageControlsProps> = ({
   currentPage,
   numPages,
   setCurrentPage,
+  setValue,
   register,
   handleSubmit,
   errors,
@@ -31,6 +34,7 @@ const PageControls: React.FC<PageControlsProps> = ({
         disabled={currentPage <= 1 || numPages === undefined}
         onClick={() => {
           setCurrentPage((prev) => (prev - 1 < 1 ? 1 : prev - 1));
+          setValue('page', String(currentPage - 1));
         }}>
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -66,6 +70,7 @@ const PageControls: React.FC<PageControlsProps> = ({
           setCurrentPage((prev) =>
             prev + 1 > numPages! ? numPages! : prev + 1
           );
+          setValue('page', String(currentPage + 1));
         }}>
         <ChevronRight className="h-4 w-4" />
       </Button>

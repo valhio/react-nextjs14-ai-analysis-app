@@ -60,6 +60,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
           currentPage={currentPage}
           numPages={numPages}
           setCurrentPage={setCurrentPage}
+          setValue={setValue}
           register={register}
           handleSubmit={handleSubmit(handlePageSubmit)}
           errors={errors}
