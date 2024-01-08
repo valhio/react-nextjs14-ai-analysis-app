@@ -14,7 +14,6 @@ interface ZoomControlsProps {
 
 const ZoomControls: React.FC<ZoomControlsProps> = ({ scale, setScale }) => {
   return (
-    <div className="space-x-2">
       <DropdownMenu>
         {/* asChild is used to pass the child element to the DropdownMenuTrigger. Otherwise, there will be a hydration error. */}
         <DropdownMenuTrigger asChild>
@@ -33,7 +32,6 @@ const ZoomControls: React.FC<ZoomControlsProps> = ({ scale, setScale }) => {
           <DropdownMenuItem onSelect={() => setScale(2.5)}>250%</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
   );
 };
 

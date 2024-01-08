@@ -15,6 +15,7 @@ interface PdfDocumentProps {
   zoom?: number;
   scale?: number;
   rotate?: number;
+  rotation?: number;
   setNumPages: (numPages: number) => void;
 }
 
@@ -23,6 +24,7 @@ const PdfDocument = ({
   pageNumber,
   setNumPages,
   scale,
+  rotation
 }: PdfDocumentProps) => {
   const { toast } = useToast();
   const { width, ref } = useResizeDetector();
@@ -55,6 +57,7 @@ const PdfDocument = ({
             width={width ? width : 1}
             pageNumber={pageNumber}
             scale={scale ? scale : 1}
+            rotate={rotation ? rotation : 0}
           />
         </Document>
       </div>
