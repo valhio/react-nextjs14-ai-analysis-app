@@ -2,9 +2,10 @@ import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
 const s3 = new AWS.S3({
-    accessKeyId: "AKIAU2D25LSZ2DMCR3FD",
-    secretAccessKey: "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",
-    region: "eu-north-1",
+    // use environment variables to store the accessKeyId and secretAccessKey
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION || "us-east-1",
 });
 
 interface S3UploadOptions {
