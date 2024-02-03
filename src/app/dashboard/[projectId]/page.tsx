@@ -3,7 +3,7 @@ import getSession from "@/actions/getSession";
 import { notFound, redirect } from "next/navigation";
 import PdfRenderer from "./components/PdfRenderer";
 import ChatWrapper from "./components/ChatWrapper";
-import { getFileUrlFromS3 } from "@/utils/s3";
+import { getFileUrlFromS3 } from "@/utils/s3/get";
 import getCurrentUser from "@/actions/getCurrentUser";
 
 interface PageProps {

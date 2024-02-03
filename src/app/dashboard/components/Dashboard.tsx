@@ -6,7 +6,7 @@ import { useState } from "react";
 import LoadingFiles from "./FileLoadingSkeleton";
 import EmptyState from "./EmptyState";
 import FileList from "./ProjectList";
-import { deleteFileFromS3 } from "@/utils/s3";
+import { deleteFileFromS3 } from "@/utils/s3/delete";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 
