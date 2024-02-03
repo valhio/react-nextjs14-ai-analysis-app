@@ -1,8 +1,5 @@
-require('dotenv').config();
-
-import AWS from 'aws-sdk';
+import s3 from "./config/s3";
 import { v4 as uuidv4 } from 'uuid';
-import s3 from './config/s3Config';
 
 interface S3UploadOptions {
     file: Blob;
@@ -26,7 +23,7 @@ const generateUniqueKey = (ownerId: string, fileName: string) => {
 export default async function uploadFileToS3(options: S3UploadOptions){
     const { file, ownerId, fileName, fileType, fileSizeLimit, onProgress, onSuccess, onFail } = options;
     const params: AWS.S3.PutObjectRequest = {
-        Bucket: 'valhio-docai',
+        Bucket: s3.config.params!.Bucket,
         Key: generateUniqueKey(ownerId, fileName),
         Body: file,
         ACL: 'private',

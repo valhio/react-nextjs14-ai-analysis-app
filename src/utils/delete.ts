@@ -1,4 +1,4 @@
-import s3 from "./config/s3Config";
+import s3 from "./config/s3";
 
 interface s3DeleteOptions {
     fileKey: string;

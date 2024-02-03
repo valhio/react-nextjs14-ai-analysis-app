@@ -1,4 +1,4 @@
-import s3 from "./config/s3Config";
+import s3 from "./config/s3";
 
 export const getFileFromS3 = async (fileName: string, ownerId: string) => {
     const params = {
